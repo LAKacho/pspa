@@ -109,6 +109,13 @@ GET-запрос к `/` тоже вернёт 400, потому что подд�
 описать её через DDL и найти самый прибыльный фильм.
 Подробное описание модели и принятых решений: [db/README.md](db/README.md).
 
+### Логическая модель (ER-диаграмма)
+
+![ER-диаграмма кинотеатра](db/er-diagram.png)
+
+Диаграмма построена в [dbdiagram.io](https://dbdiagram.io), исходный текст схемы: [db/schema.dbml](db/schema.dbml)
+(его можно вставить на dbdiagram.io, чтобы открыть и отредактировать диаграмму).
+
 ### Модель
 
 Таблицы: `movie`, `genre`, `movie_genre` (M:N), `hall`, `seat_type`, `seat`, `screening` (сеанс), `screening_price`, `customer`, `ticket`.
@@ -125,6 +132,8 @@ GET-запрос к `/` тоже вернёт 400, потому что подд�
 
 | Файл | Назначение |
 |---|---|
+| [db/er-diagram.png](db/er-diagram.png) | ER-диаграмма (логическая модель) |
+| [db/schema.dbml](db/schema.dbml) | Исходный текст диаграммы для dbdiagram.io |
 | [db/init/01_schema.sql](db/init/01_schema.sql) | DDL: таблицы, ключи, индексы, ограничения |
 | [db/init/02_seed.sql](db/init/02_seed.sql) | Тестовые данные: 4 фильма, 2 зала, 39 мест, 8 сеансов, 30 билетов |
 | [db/query.sql](db/query.sql) | Запрос на самый прибыльный фильм |
@@ -213,6 +222,8 @@ php tests/test.php                    # верификация email, DNS под
 │   ├── init/
 │   │   ├── 01_schema.sql    # DDL
 │   │   └── 02_seed.sql      # тестовые данные
+│   ├── er-diagram.png       # ER-диаграмма
+│   ├── schema.dbml          # исходник диаграммы (dbdiagram.io)
 │   ├── query.sql            # самый прибыльный фильм
 │   └── README.md            # описание модели и решений
 ├── nginx/

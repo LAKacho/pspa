@@ -5,6 +5,8 @@
 ## Состав
 | Файл | Назначение |
 |---|---|
+| `er-diagram.png` | ER-диаграмма (логическая модель) |
+| `schema.dbml` | Исходный текст диаграммы для dbdiagram.io |
 | `init/01_schema.sql` | DDL: таблицы, ключи, индексы, ограничения |
 | `init/02_seed.sql` | Тестовые данные (4 фильма, 2 зала, 39 мест, 8 сеансов, 30 билетов) |
 | `query.sql` | Запрос на самый прибыльный фильм |
@@ -21,6 +23,9 @@ docker exec -it pspa-mysql mysql -upspa_user -ppspa_password pspa_db < db/query.
 Для повторного применения: `docker compose -f docker-compose.yml down -v`, затем `up -d`.
 
 ## Логическая модель
+
+![ER-диаграмма кинотеатра](er-diagram.png)
+
 Таблицы: `movie`, `genre`, `movie_genre` (M:N), `hall`, `seat_type`, `seat`,
 `screening` (сеанс), `screening_price`, `customer`, `ticket`.
 

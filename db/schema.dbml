@@ -1,0 +1,121 @@
+// ER-модель кинотеатра. Вставьте этот текст на https://dbdiagram.io/d, чтобы открыть диаграмму.
+// Соответствует db/init/01_schema.sql
+
+Table movie {
+  id integer [pk, increment]
+  title varchar(200) [not null]
+  duration_min smallint [not null, note: 'CHECK duration_min > 0']
+  age_rating varchar(5) [note: '0+, 6+, 12+, 16+, 18+']
+  description text
+  created_at datetime [not null, default: `now()`]
+
+  indexes {
+    title
+  }
+}
+
+Table genre {
+  id integer [pk, increment]
+  name varchar(50) [not null, unique]
+}
+
+Table movie_genre {
+  movie_id integer [not null]
+  genre_id integer [not null]
+
+  indexes {
+    (movie_id, genre_id) [pk]
+    genre_id
+  }
+}
+
+Table hall {
+  id integer [pk, increment]
+  name varchar(50) [not null, unique]
+}
+
+Table seat_type {
+  id integer [pk, increment]
+  name varchar(50) [not null, unique, note: 'обычное, VIP, диван']
+  description varchar(255)
+}
+
+Table seat {
+  id integer [pk, increment]
+  hall_id integer [not null]
+  row_no smallint [not null, note: 'CHECK row_no > 0']
+  seat_no smallint [not null, note: 'CHECK seat_no > 0']
+  seat_type_id integer [not null]
+
+  indexes {
+    (hall_id, row_no, seat_no) [unique]
+    (id, hall_id) [unique]
+    seat_type_id
+  }
+}
+
+Table screening {
+  id integer [pk, increment]
+  movie_id integer [not null]
+  hall_id integer [not null]
+  starts_at datetime [not null]
+  created_at datetime [not null, default: `now()`]
+
+  indexes {
+    (id, hall_id) [unique]
+    (hall_id, starts_at) [unique]
+    movie_id
+  }
+}
+
+Table screening_price {
+  screening_id integer [not null]
+  seat_type_id integer [not null]
+  price decimal(10,2) [not null, note: 'CHECK price >= 0']
+
+  indexes {
+    (screening_id, seat_type_id) [pk]
+    seat_type_id
+  }
+}
+
+Table customer {
+  id integer [pk, increment]
+  full_name varchar(150) [not null]
+  email varchar(150) [not null, unique]
+  phone varchar(20)
+  created_at datetime [not null, default: `now()`]
+}
+
+Table ticket {
+  id integer [pk, increment]
+  screening_id integer [not null]
+  seat_id integer [not null]
+  hall_id integer [not null, note: 'зал сеанса и места, нужен для составных FK']
+  customer_id integer [not null]
+  price_paid decimal(10,2) [not null, note: 'цена на момент покупки, CHECK price_paid >= 0']
+  purchased_at datetime [not null, default: `now()`]
+
+  indexes {
+    (screening_id, seat_id) [unique, note: 'одно место на сеанс продаётся один раз']
+    (seat_id, hall_id)
+    customer_id
+  }
+}
+
+Ref: movie_genre.movie_id > movie.id [delete: cascade]
+Ref: movie_genre.genre_id > genre.id [delete: cascade]
+
+Ref: seat.hall_id > hall.id [delete: cascade]
+Ref: seat.seat_type_id > seat_type.id
+
+Ref: screening.movie_id > movie.id
+Ref: screening.hall_id > hall.id
+
+Ref: screening_price.screening_id > screening.id [delete: cascade]
+Ref: screening_price.seat_type_id > seat_type.id
+
+// составные ключи: место физически принадлежит залу сеанса
+Ref: ticket.(screening_id, hall_id) > screening.(id, hall_id)
+Ref: ticket.(seat_id, hall_id) > seat.(id, hall_id)
+Ref: ticket.customer_id > customer.id
