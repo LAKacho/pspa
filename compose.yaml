@@ -1,0 +1,6 @@
+services:
+  pspa:
+    image: pspa
+    build:
+      context: .
+      dockerfile: ./Dockerfile
