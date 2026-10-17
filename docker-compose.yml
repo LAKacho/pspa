@@ -5,9 +5,30 @@ services:
     networks:
       - app-network
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    container_name: pspa-elasticsearch
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -qE '\"status\":\"(green|yellow)\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    networks:
+      - app-network
+
   php-fpm-1:
     build: ./php
     container_name: pspa-php-1
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
     volumes:
       - ./app:/var/www
       - ./php/php.ini:/usr/local/etc/php/conf.d/custom.ini:ro
@@ -19,6 +40,8 @@ services:
   php-fpm-2:
     build: ./php
     container_name: pspa-php-2
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
     volumes:
       - ./app:/var/www
       - ./php/php.ini:/usr/local/etc/php/conf.d/custom.ini:ro
@@ -81,6 +104,7 @@ services:
 
 volumes:
   mysql-data:
+  es-data:
 
 networks:
   app-network:

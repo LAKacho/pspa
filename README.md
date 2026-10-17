@@ -195,6 +195,18 @@ http://localhost/cinema.php показывает:
 
 Учебные пароли в `docker-compose.yml` не предназначены для реальных систем.
 
+## 4. Анализ YouTube-каналов (Elasticsearch)
+
+Индексы `channels` и `videos` в Elasticsearch 8, модели, репозитории и класс статистики (сумма лайков и дизлайков канала, топ каналов по отношению лайков к дизлайкам). Описание структуры, индексов и запуск: [app/es/README.md](app/es/README.md).
+
+```bash
+docker compose -f docker-compose.yml up -d
+docker exec pspa-php-1 php bin/seed.php
+docker exec pspa-php-1 php bin/stats.php 3 UC_tech
+```
+
+Перед первым запуском установите зависимости: `docker run --rm -v "${PWD}\app:/app" -w /app composer:2 composer install`.
+
 ## Тесты
 
 Тесты запускаются локально, без Docker (нужен PHP 8.2+, например из XAMPP):
