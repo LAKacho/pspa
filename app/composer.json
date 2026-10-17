@@ -1,0 +1,13 @@
+{
+  "name": "pspa/youtube-analytics",
+  "require": {
+    "php": ">=8.1",
+    "elasticsearch/elasticsearch": "^8.13",
+    "guzzlehttp/guzzle": "^7.8"
+  },
+  "autoload": {
+    "psr-4": {
+      "Pspa\\Youtube\\": "src/Youtube/"
+    }
+  }
+}

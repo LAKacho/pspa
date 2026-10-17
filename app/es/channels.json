@@ -1,0 +1,13 @@
+{
+  "settings": { "number_of_shards": 1, "number_of_replicas": 0 },
+  "mappings": {
+    "properties": {
+      "channel_id":  { "type": "keyword" },
+      "title":       { "type": "text", "fields": { "raw": { "type": "keyword" } } },
+      "description": { "type": "text" },
+      "country":     { "type": "keyword" },
+      "subscribers": { "type": "long" },
+      "created_at":  { "type": "date" }
+    }
+  }
+}
