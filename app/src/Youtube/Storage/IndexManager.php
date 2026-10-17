@@ -51,6 +51,16 @@ final class IndexManager
         return $this->client->indices()->exists(['index' => $index])->asBool();
     }
 
+    /** Число документов в индексе (0, если индекса нет). */
+    public function count(string $index): int
+    {
+        if (!$this->exists($index)) {
+            return 0;
+        }
+
+        return (int) $this->client->count(['index' => $index])->asArray()['count'];
+    }
+
     /** Делает записанные документы видимыми для поиска сразу. */
     public function refresh(string $index): void
     {

@@ -197,7 +197,7 @@ http://localhost/cinema.php показывает:
 
 ## 4. Анализ YouTube-каналов (Elasticsearch)
 
-Индексы `channels` и `videos` в Elasticsearch 8, модели, репозитории и класс статистики (сумма лайков и дизлайков канала, топ каналов по отношению лайков к дизлайкам). Описание структуры, индексов и запуск: [app/es/README.md](app/es/README.md).
+Веб-интерфейс: http://localhost/youtube.php. Индексы `channels` и `videos` в Elasticsearch 8, модели, репозитории и класс статистики (сумма лайков и дизлайков канала, топ каналов по отношению лайков к дизлайкам). Описание структуры, индексов и запуск: [app/es/README.md](app/es/README.md).
 
 ```bash
 docker compose -f docker-compose.yml up -d

@@ -46,6 +46,28 @@ final class VideoRepository
         return Video::fromArray($response->asArray()['_source']);
     }
 
+    /**
+     * Видео канала (до $limit штук), новые первыми.
+     *
+     * @return list<Video>
+     */
+    public function byChannel(string $channelId, int $limit = 100): array
+    {
+        $response = $this->client->search([
+            'index' => IndexManager::VIDEOS,
+            'body' => [
+                'size' => $limit,
+                'query' => ['term' => ['channel_id' => $channelId]],
+                'sort' => [['published_at' => 'desc']],
+            ],
+        ])->asArray();
+
+        return array_map(
+            static fn (array $hit): Video => Video::fromArray($hit['_source']),
+            $response['hits']['hits'],
+        );
+    }
+
     /** Удаляет видео. Возвращает true, если оно существовало. */
     public function delete(string $videoId, bool $refresh = false): bool
     {
