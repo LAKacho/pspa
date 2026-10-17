@@ -1,0 +1,44 @@
+sid = 61
+=== Q1: сеансы на сегодня ===
+-> Sort: screening.starts_at  (cost=1.36 rows=100) (actual time=0.131..0.134 rows=30 loops=1)
+    -> Filter: ((screening.starts_at >= <cache>(curdate())) and (screening.starts_at < <cache>((curdate() + interval 1 day))))  (cost=1.36 rows=100) (actual time=0.0787..0.103 rows=30 loops=1)
+        -> Table scan on screening  (cost=1.36 rows=100) (actual time=0.0506..0.0753 rows=100 loops=1)
+
+=== Q2: билеты за неделю ===
+-> Aggregate: count(0)  (cost=554 rows=1) (actual time=2.69..2.69 rows=1 loops=1)
+    -> Filter: (ticket.purchased_at >= <cache>((now() - interval 7 day)))  (cost=281 rows=2737) (actual time=0.126..2.39 rows=8069 loops=1)
+        -> Table scan on ticket  (cost=281 rows=8212) (actual time=0.121..1.71 rows=8069 loops=1)
+
+=== Q3: афиша ===
+-> Sort: m.title  (actual time=0.562..0.567 rows=22 loops=1)
+    -> Stream results  (actual time=0.439..0.53 rows=22 loops=1)
+        -> Group aggregate: group_concat(tmp_field order by screening.starts_at ASC separator ', ')  (actual time=0.435..0.499 rows=22 loops=1)
+            -> Sort: m.id, m.title, m.age_rating, m.duration_min  (actual time=0.424..0.433 rows=30 loops=1)
+                -> Stream results  (cost=5.25 rows=11.1) (actual time=0.117..0.359 rows=30 loops=1)
+                    -> Nested loop inner join  (cost=5.25 rows=11.1) (actual time=0.105..0.284 rows=30 loops=1)
+                        -> Filter: ((s.starts_at >= <cache>(curdate())) and (s.starts_at < <cache>((curdate() + interval 1 day))))  (cost=1.36 rows=11.1) (actual time=0.0851..0.133 rows=30 loops=1)
+                            -> Table scan on s  (cost=1.36 rows=100) (actual time=0.0511..0.0914 rows=100 loops=1)
+                        -> Single-row index lookup on m using PRIMARY (id=s.movie_id)  (cost=0.259 rows=1) (actual time=0.00458..0.00462 rows=1 loops=30)
+
+=== Q4: топ-3 фильма по выручке за неделю ===
+-> Limit: 3 row(s)  (actual time=35.2..35.2 rows=3 loops=1)
+    -> Sort: revenue DESC, limit input to 3 row(s) per chunk  (actual time=35.2..35.2 rows=3 loops=1)
+        -> Table scan on <temporary>  (actual time=35.2..35.2 rows=45 loops=1)
+            -> Aggregate using temporary table  (actual time=35.2..35.2 rows=45 loops=1)
+                -> Nested loop inner join  (cost=2197 rows=2737) (actual time=0.398..18.3 rows=8069 loops=1)
+                    -> Nested loop inner join  (cost=1239 rows=2737) (actual time=0.387..14 rows=8069 loops=1)
+                        -> Filter: (t.purchased_at >= <cache>((now() - interval 7 day)))  (cost=281 rows=2737) (actual time=0.37..8.69 rows=8069 loops=1)
+                            -> Table scan on t  (cost=281 rows=8212) (actual time=0.361..6.5 rows=8069 loops=1)
+                        -> Single-row index lookup on s using PRIMARY (id=t.screening_id)  (cost=0.25 rows=1) (actual time=364e-6..398e-6 rows=1 loops=8069)
+                    -> Single-row index lookup on m using PRIMARY (id=s.movie_id)  (cost=0.25 rows=1) (actual time=232e-6..270e-6 rows=1 loops=8069)
+
+=== Q5: схема зала ===
+-> Group aggregate: group_concat(if((t.id is null),'o','X') order by st.seat_no ASC separator ' ')  (cost=110 rows=31.6) (actual time=0.264..1.5 rows=10 loops=1)
+    -> Nested loop left join  (cost=90.3 rows=200) (actual time=0.0955..1.27 rows=200 loops=1)
+        -> Covering index lookup on st using seat_index_2 (hall_id='1')  (cost=20.3 rows=200) (actual time=0.0808..0.232 rows=200 loops=1)
+        -> Single-row covering index lookup on t using ticket_index_9 (screening_id=(@sid), seat_id=st.id)  (cost=0.251 rows=1) (actual time=0.00478..0.0048 rows=0.385 loops=200)
+
+=== Q6: мин. и макс. цена на сеанс ===
+-> Aggregate: min(screening_price.price), max(screening_price.price)  (cost=0.851 rows=1) (actual time=0.0246..0.0247 rows=1 loops=1)
+    -> Index lookup on screening_price using PRIMARY (screening_id=(@sid))  (cost=0.551 rows=3) (actual time=0.0162..0.0193 rows=3 loops=1)
+

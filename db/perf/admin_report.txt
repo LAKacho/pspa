@@ -1,0 +1,51 @@
++-------------------------+---------+----------+----------+
+| Table                   | Op      | Msg_type | Msg_text |
++-------------------------+---------+----------+----------+
+| pspa_db.movie           | analyze | status   | OK       |
+| pspa_db.genre           | analyze | status   | OK       |
+| pspa_db.movie_genre     | analyze | status   | OK       |
+| pspa_db.hall            | analyze | status   | OK       |
+| pspa_db.seat_type       | analyze | status   | OK       |
+| pspa_db.seat            | analyze | status   | OK       |
+| pspa_db.screening       | analyze | status   | OK       |
+| pspa_db.screening_price | analyze | status   | OK       |
+| pspa_db.customer        | analyze | status   | OK       |
+| pspa_db.ticket          | analyze | status   | OK       |
++-------------------------+---------+----------+----------+
++------------------------------------------------+-----------------------------------------+---------+
+| object_type                                    | object_name                             | size_mb |
++------------------------------------------------+-----------------------------------------+---------+
+| таблица (данные + индексы)                     | ticket                                  | 1511.06 |
+| индекс                                         | ticket.PRIMARY                          |  408.88 |
+| индекс                                         | ticket.ticket_index_10                  |  305.00 |
+| индекс                                         | ticket.ticket_index_9                   |  288.86 |
+| таблица (данные + индексы)                     | customer                                |  264.59 |
+| индекс                                         | ticket.idx_ticket_purchased             |  211.84 |
+| индекс                                         | customer.PRIMARY                        |  158.67 |
+| индекс                                         | ticket.ticket_index_11                  |  157.77 |
+| индекс                                         | ticket.screening_id                     |  138.72 |
+| индекс                                         | customer.email                          |  105.92 |
+| таблица (данные + индексы)                     | screening_price                         |   22.03 |
+| индекс                                         | screening_price.PRIMARY                 |   16.52 |
+| таблица (данные + индексы)                     | screening                               |   12.58 |
+| индекс                                         | screening_price.screening_price_index_8 |    5.52 |
+| индекс                                         | screening.PRIMARY                       |    3.52 |
++------------------------------------------------+-----------------------------------------+---------+
++------------+----------------------+------------+-------------+
+| table_name | index_name           | count_read | count_write |
++------------+----------------------+------------+-------------+
+| seat       | seat_index_2         |   38612211 |           0 |
+| customer   | email                |    3606000 |           0 |
+| ticket     | idx_ticket_purchased |    1803467 |           0 |
+| movie      | PRIMARY              |     901838 |           0 |
+| screening  | PRIMARY              |     900346 |           0 |
++------------+----------------------+------------+-------------+
++-------------+------------+------------+-------------+
+| table_name  | index_name | count_read | count_write |
++-------------+------------+------------+-------------+
+| customer    | PRIMARY    |          0 |           0 |
+| movie_genre | PRIMARY    |          0 |           0 |
+| genre       | PRIMARY    |          0 |           0 |
+| genre       | name       |          0 |           0 |
+| hall        | PRIMARY    |          0 |           0 |
++-------------+------------+------------+-------------+
