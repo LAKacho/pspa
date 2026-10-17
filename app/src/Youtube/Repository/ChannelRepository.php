@@ -46,6 +46,33 @@ class ChannelRepository
     }
 
     /**
+     * Все каналы (до $limit штук), по названию.
+     *
+     * @return list<Channel>
+     */
+    public function all(int $limit = 200): array
+    {
+        $response = $this->client->search([
+            'index' => self::INDEX,
+            'body' => [
+                'size' => $limit,
+                'query' => ['match_all' => new \stdClass()],
+                'sort' => [['title.raw' => 'asc']],
+            ],
+        ]);
+
+        return array_map(
+            static fn (array $hit): Channel => Channel::fromArray($hit['_source']),
+            $response['hits']['hits'],
+        );
+    }
+
+    public function count(): int
+    {
+        return (int) $this->client->count(['index' => self::INDEX])['count'];
+    }
+
+    /**
      * Находит несколько каналов одним запросом.
      *
      * @param list<string> $channelIds

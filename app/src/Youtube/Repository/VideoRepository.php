@@ -85,6 +85,33 @@ class VideoRepository
     }
 
     /**
+     * Видео канала (до $limit штук), новые первыми.
+     *
+     * @return list<Video>
+     */
+    public function byChannel(string $channelId, int $limit = 100): array
+    {
+        $response = $this->client->search([
+            'index' => self::INDEX,
+            'body' => [
+                'size' => $limit,
+                'query' => ['term' => ['channel_id' => $channelId]],
+                'sort' => [['published_at' => 'desc']],
+            ],
+        ]);
+
+        return array_map(
+            static fn (array $hit): Video => Video::fromArray($hit['_source']),
+            $response['hits']['hits'],
+        );
+    }
+
+    public function count(): int
+    {
+        return (int) $this->client->count(['index' => self::INDEX])['count'];
+    }
+
+    /**
      * Сумма лайков и дизлайков по всем видео канала.
      *
      * @return array{videos: int, likes: int, dislikes: int}
